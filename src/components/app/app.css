@@ -10,7 +10,7 @@
 }
 
 .card {
-  max-width: 454px;
+  width: 454px;
   max-height: 281px;
   flex-direction: row;
   margin-right: 0.5rem;
@@ -62,4 +62,16 @@
   border-radius: 50%;
   padding-top: 3px;
   text-align: center;
+}
+
+.ant-input {
+  border: 1px solid #D9D9D9;
+  max-width: 1060px;
+  margin: 86px 36px 36px !important;
+  height: 40px;
+  border-radius: 2px;
+}
+
+.pagination {
+  margin: 40px !important
 }

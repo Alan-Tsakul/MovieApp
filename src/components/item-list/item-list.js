@@ -7,7 +7,7 @@ import "./item-list.css";
 export default class ItemList extends Component {
 
   render() {
-    const { title, posterPath, overview, releaseDate, voteAverage, id,  } =
+    const { title, posterPath, overview, releaseDate, voteAverage, id  } =
       this.props;
       let formatedDate;
       try {
@@ -18,7 +18,7 @@ export default class ItemList extends Component {
 
     return (
 
-      <div className="card">
+      <div className="card" key={id}>
       <img src={`https://image.tmdb.org/t/p/w200${posterPath}`} className="card-img-top" alt="..."></img>
       <div className="card-body">
         <h5 className="card-title">{title}</h5>
@@ -34,7 +34,6 @@ export default class ItemList extends Component {
         </ul>
         <ClampLines
         text={overview}
-        id={id}
         lines={4}
         ellipsis="..."
         className="card-text"
