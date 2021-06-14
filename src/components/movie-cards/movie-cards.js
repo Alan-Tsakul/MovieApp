@@ -7,12 +7,22 @@ import MovieService from "../../services/movie-service";
 import "../movie-cards/movie-cards.css";
 import { Consumer } from "../my-context";
 import GenresList from "../genres-list/genres-list";
+import PropTypes from "prop-types";
 
 export default class MovieCards extends Component {
+  static propTypes = {
+    id: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    posterPath: PropTypes.string.isRequired,
+    releaseDate: PropTypes.string.isRequired,
+    genres_ids: PropTypes.instanceOf(Array).isRequired,
+    overview: PropTypes.string.isRequired,
+  };
+
   state = {
     stars: null,
     id: null,
-    rating: this.props.voteAverage,
+    rating: null,
   };
 
   movieService = new MovieService();

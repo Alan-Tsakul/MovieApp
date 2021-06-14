@@ -40,7 +40,14 @@ export default class App extends Component {
   componentDidUpdate(prevState) {
     if (this.state.page !== prevState.page) {
       this.updateMovies();
+      this.setState({
+        page: this.props.page,
+      });
     }
+  }
+
+  componentWillUnmount() {
+    this.updateMovies();
   }
 
   onLabelChange = (event) => {
@@ -63,7 +70,7 @@ export default class App extends Component {
       .getAllMovies(label, page)
       .then((data) => {
         this.setState({
-          movies: data,
+          movies: data.results,
           loading: false,
           error: false,
         });

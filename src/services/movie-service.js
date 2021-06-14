@@ -17,7 +17,7 @@ export default class MovieService {
 
   async getAllMovies(text, page) {
     const res = await this.getResource(`&query=${text}&page=${page}`);
-    return await res.results;
+    return await res;
   }
 
   async guestSessionOpen() {
