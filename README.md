@@ -1,1 +1,1 @@
-https://movie-app-qt0jk33ay-alan-tsakul.vercel.app
+https://movies-chi.vercel.app/
