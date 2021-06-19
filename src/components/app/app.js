@@ -3,15 +3,14 @@ import { Row, Col, Spin, Alert, Input, Pagination, Tabs } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import debounce from "lodash.debounce";
 import MovieService from "../../services/movie-service";
-import MovieCardsList from "../movie-cards-list";
-import RatedCardsList from "../rated-cards-list";
-import { Provider } from "../my-context";
+import MovieCardsList from "../movie-cards-list/movie-cards-list.jsx";
+import { Provider } from "../my-content/my-context";
 import "./app.css";
 import "antd/dist/antd.css";
 
 export default class App extends Component {
   movieService = new MovieService();
-  debounced = debounce(() => this.updateMovies(), 500);
+  updatingDebounced = debounce(() => this.updateMovies(), 500);
 
   state = {
     movies: [],
@@ -26,7 +25,6 @@ export default class App extends Component {
   };
 
   componentDidMount() {
-    this.updateMovies();
     const session = this.movieService.guestSessionOpen();
     session.then((data) => this.setState({ sessionId: data.guest_session_id }));
     const genres = this.movieService.getAllGenres();
@@ -51,11 +49,18 @@ export default class App extends Component {
   }
 
   onLabelChange = (event) => {
-    this.setState({
-      label: event.target.value,
-      loading: true,
-    });
-    this.debounced();
+    if (event.target.value === "") {
+      this.setState({
+        label: null,
+        loading: false,
+      });
+    } else {
+      this.setState({
+        label: event.target.value,
+        loading: true,
+      });
+      this.updatingDebounced();
+    }
   };
 
   onPageChange = (event) => {
@@ -75,7 +80,9 @@ export default class App extends Component {
           error: false,
         });
       })
-      .catch(this.onError);
+      .catch((err) => {
+        this.onError(err);
+      });
   }
 
   updateRatedMovies() {
@@ -88,11 +95,10 @@ export default class App extends Component {
   }
 
   onError = (err) => {
-    this.setState({
-      error: true,
-      loading: false,
-    });
-    console.log(err);
+    if (err.message === "Failed to fetch") {
+      setTimeout(() => this.updateMovies(), 5000);
+    }
+    this.setState({ error: true, loading: false });
   };
 
   onTabChange = (key) => {
@@ -134,7 +140,11 @@ export default class App extends Component {
       movies.length !== 0 && hasData && !spinner ? (
         <>
           <Col span={4}>
-            <MovieCardsList movies={movies} sessionId={sessionId} />
+            <MovieCardsList
+              arr={movies}
+              sessionId={sessionId}
+              onError={this.onError}
+            />
           </Col>
           <Pagination
             className="pagination tabs-movies"
@@ -148,8 +158,8 @@ export default class App extends Component {
     const ratedContent =
       ratedMovies.length !== 0 && hasData && !spinner ? (
         <Col span={4}>
-          <RatedCardsList
-            ratedMovies={ratedMovies}
+          <MovieCardsList
+            arr={ratedMovies}
             sessionId={sessionId}
             allGenres={allGenres}
           />

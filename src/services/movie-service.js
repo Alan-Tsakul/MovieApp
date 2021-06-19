@@ -1,42 +1,41 @@
-export default class MovieService {
-  _apiKey = "api_key=4e8b5bdc758502fd137d7ef5c78f7718";
+const API_KEY = "4e8b5bdc758502fd137d7ef5c78f7718";
 
+export default class MovieService {
   _apiBase = "https://api.themoviedb.org/3/";
 
   async getResource(url) {
     const res = await fetch(
-      `${this._apiBase}search/movie?${this._apiKey}&include_adult=false${url}`
+      `${this._apiBase}search/movie?api_key=${API_KEY}&include_adult=false${url}`
     );
 
     if (!res.ok) {
-      throw new Error(`Could not fetch ` + 
-      `, received ${res.status}`);
+      throw new Error(`Could not fetch ` + `, received ${res.status}`);
     }
     return await res.json();
   }
 
-  async getAllMovies(text, page) {
-    const res = await this.getResource(`&query=${text}&page=${page}`);
-    return await res;
+  getAllMovies(text, page) {
+    const res = this.getResource(`&query=${text}&page=${page}`);
+    return res;
   }
 
   async guestSessionOpen() {
     const res = await fetch(
-      `${this._apiBase}authentication/guest_session/new?${this._apiKey}`
+      `${this._apiBase}authentication/guest_session/new?api_key=${API_KEY}`
     );
     return res.json();
   }
 
   async getRatedMovies(sessionId) {
     const res = await fetch(
-      `${this._apiBase}guest_session/${sessionId}/rated/movies?${this._apiKey}&language=en-US&sort_by=created_at.asc`
+      `${this._apiBase}guest_session/${sessionId}/rated/movies?api_key=${API_KEY}&language=en-US&sort_by=created_at.asc`
     );
     return res.json();
   }
 
   async rateMovie(id, rating, sessionId) {
-    await fetch(
-      `${this._apiBase}movie/${id}/rating?${this._apiKey}&guest_session_id=${sessionId}`,
+    const res = await fetch(
+      `${this._apiBase}movie/${id}/rating?api_key=${API_KEY}&guest_session_id=${sessionId}`,
       {
         method: "POST",
         headers: {
@@ -47,12 +46,14 @@ export default class MovieService {
           value: rating,
         }),
       }
-    )
-      .then((res) => res.json())
+    );
+    return res.json();
   }
 
   async getAllGenres() {
-    const res =  await fetch(`${this._apiBase}genre/movie/list?${this._apiKey}&language=en-US`);
-    return res.json()
+    const res = await fetch(
+      `${this._apiBase}genre/movie/list?api_key=${API_KEY}&language=en-US`
+    );
+    return await res.json();
   }
 }

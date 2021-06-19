@@ -5,15 +5,14 @@ import format from "date-fns/format";
 import { Rate } from "antd";
 import MovieService from "../../services/movie-service";
 import "../movie-cards/movie-cards.css";
-import { Consumer } from "../my-context";
-import GenresList from "../genres-list/genres-list";
+import { Consumer } from "../my-content/my-context";
+import GenresList from "../genres-list/genres-list.jsx";
 import PropTypes from "prop-types";
 
 export default class MovieCards extends Component {
   static propTypes = {
     id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
-    posterPath: PropTypes.string.isRequired,
     releaseDate: PropTypes.string.isRequired,
     genres_ids: PropTypes.instanceOf(Array).isRequired,
     overview: PropTypes.string.isRequired,
@@ -28,13 +27,20 @@ export default class MovieCards extends Component {
   movieService = new MovieService();
 
   onMovieRated = (stars, id) => {
-    const { sessionId, rating } = this.props;
-    this.setState({
-      stars: stars,
-      id: id,
-      rating: rating,
-    });
-    this.movieService.rateMovie(id, stars, sessionId);
+    const { sessionId, rating, onError } = this.props;
+
+    this.movieService
+      .rateMovie(id, stars, sessionId)
+      .then(
+        this.setState({
+          stars: stars,
+          id: id,
+          rating: rating,
+        })
+      )
+      .catch((err) => {
+        onError(err);
+      });
   };
 
   render() {
