@@ -10,6 +10,13 @@ import GenresList from "../genres-list/genres-list.jsx";
 import PropTypes from "prop-types";
 
 export default class MovieCards extends Component {
+  static propTypes = {
+    id: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    releaseDate: PropTypes.string.isRequired,
+    genres_ids: PropTypes.instanceOf(Array).isRequired,
+    overview: PropTypes.string.isRequired,
+  };
 
   state = {
     stars: null,
@@ -36,17 +43,28 @@ export default class MovieCards extends Component {
       });
   };
 
+  spliceOverview(str) {
+    const arrStr = str.split('');
+    const index = arrStr.indexOf(' ', 130);
+    if (index === -1) {
+      return arrStr.join('');
+    }
+    return `${arrStr.splice(0, index).join('')} ...`;
+  }
+
   render() {
     const {
       title,
       posterPath,
-      overview,
       releaseDate,
       voteAverage,
       id,
       rating,
       genres_ids,
     } = this.props;
+
+    let { overview } = this.props;
+    overview = this.spliceOverview(overview);
 
     const { stars } = this.state;
 
