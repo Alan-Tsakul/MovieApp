@@ -10,13 +10,6 @@ import GenresList from "../genres-list/genres-list.jsx";
 import PropTypes from "prop-types";
 
 export default class MovieCards extends Component {
-  static propTypes = {
-    id: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    releaseDate: PropTypes.string.isRequired,
-    genres_ids: PropTypes.instanceOf(Array).isRequired,
-    overview: PropTypes.string.isRequired,
-  };
 
   state = {
     stars: null,

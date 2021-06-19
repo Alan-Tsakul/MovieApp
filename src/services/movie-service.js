@@ -40,11 +40,11 @@ export default class MovieService {
         method: "POST",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          value: rating,
-        }),
+          value: rating
+        })
       }
     );
     return res.json();
