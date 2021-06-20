@@ -1,17 +1,23 @@
+ /* eslint-disable */
 import React from "react";
+import PropTypes from "prop-types";
 
-const GenresList = ({ allGenres, genres_ids }) => {
-  const findMatch = (genres_ids) =>
-    allGenres.filter((item) => genres_ids.includes(item.id));
-  const filteredIds = findMatch(genres_ids);
+const GenresList = ({ allGenres, genresIds }) => {
+  const findMatch = (genresIds) =>
+    allGenres.filter((item) => genresIds.includes(item.id));
+  const filteredIds = findMatch(genresIds);
 
-  const genresList = filteredIds.map((genre, index) => (
-    <li className="list-group-item" key={index}>
+  const genresList = filteredIds.map((genre) => (
+    <li className="list-group-item" key={genre.id}>
       {genre.name}
     </li>
   ));
 
   return <ul className="list-group">{genresList}</ul>;
 };
+
+GenresList.propTypes = {
+  allGenres: PropTypes.instanceOf(Array).isRequired
+}
 
 export default GenresList;

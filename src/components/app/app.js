@@ -1,30 +1,35 @@
-import React, { Component } from "react";
-import { Row, Col, Spin, Alert, Input, Pagination, Tabs } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
-import debounce from "lodash.debounce";
-import MovieService from "../../services/movie-service";
-import MovieCardsList from "../movie-cards-list/movie-cards-list.jsx";
-import { Provider } from "../my-content/my-context";
-import "./app.css";
-import "antd/dist/antd.css";
+/* eslint-disable */
+import React, { Component } from 'react';
+import { Row, Col, Spin, Alert, Input, Pagination, Tabs } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import debounce from 'lodash.debounce';
+import MovieService from '../../services/movie-service';
+import MovieCardsList from '../movie-cards-list/movie-cards-list.jsx';
+import { Provider } from '../my-content/my-context';
+import './app.css';
+import 'antd/dist/antd.css';
+import PropTypes from 'prop-types';
 
 export default class App extends Component {
+  static propTypes = {
+    page: PropTypes.number.isRequired,
+  };
+
   movieService = new MovieService();
+
   updatingDebounced = debounce(() => this.updateMovies(), 500);
 
   state = {
     movies: [],
     loading: true,
-    label: "return",
-    page: 1,
-    sessionId: "",
-    currentTab: 1,
+    label: 'return',
+    sessionId: '',
     ratedMovies: [],
     allGenres: [],
-    hasError: false,
   };
 
   componentDidMount() {
+    this.updateMovies();
     const session = this.movieService.guestSessionOpen();
     session.then((data) => this.setState({ sessionId: data.guest_session_id }));
     const genres = this.movieService.getAllGenres();
@@ -36,11 +41,9 @@ export default class App extends Component {
   }
 
   componentDidUpdate(prevState) {
-    if (this.state.page !== prevState.page) {
+    const { page } = this.props;
+    if (page !== prevState.page) {
       this.updateMovies();
-      this.setState({
-        page: this.props.page,
-      });
     }
   }
 
@@ -48,8 +51,12 @@ export default class App extends Component {
     this.updateMovies();
   }
 
+  onTabChange = () => {
+    this.updateRatedMovies();
+  };
+
   onLabelChange = (event) => {
-    if (event.target.value === "") {
+    if (event.target.value === '') {
       this.setState({
         label: null,
         loading: false,
@@ -69,6 +76,22 @@ export default class App extends Component {
     });
   };
 
+  onError = (err) => {
+    if (err.message === 'Failed to fetch') {
+      setTimeout(() => this.updateMovies(), 5000);
+    }
+    this.setState({ error: true, loading: false });
+  };
+
+  updateRatedMovies() {
+    const { sessionId } = this.state;
+    this.movieService.getRatedMovies(sessionId).then((data) => {
+      this.setState({
+        ratedMovies: data.results,
+      });
+    });
+  }
+
   updateMovies() {
     const { page, label } = this.state;
     this.movieService
@@ -85,134 +108,58 @@ export default class App extends Component {
       });
   }
 
-  updateRatedMovies() {
-    const { sessionId } = this.state;
-    this.movieService.getRatedMovies(sessionId).then((data) => {
-      this.setState({
-        ratedMovies: data.results,
-      });
-    });
-  }
-
-  onError = (err) => {
-    if (err.message === "Failed to fetch") {
-      setTimeout(() => this.updateMovies(), 5000);
-    }
-    this.setState({ error: true, loading: false });
-  };
-
-  onTabChange = (key) => {
-    this.setState({
-      currentTab: key,
-    });
-    this.updateRatedMovies();
-  };
-
   render() {
-    const {
-      movies,
-      loading,
-      error,
-      label,
-      page,
-      ratedMovies,
-      sessionId,
-      allGenres,
-    } = this.state;
-
+    const { movies, loading, error, label, page, ratedMovies, sessionId, allGenres } = this.state;
+    let spinner;
     const hasData = !(loading || error);
-    const antIcon = <LoadingOutlined style={{ fontSize: 100 }} />;
-    const spinner = loading ? (
-      <Spin indicator={antIcon} className="spinner" />
-    ) : null;
-
-    const errorMessage = error ? (
-      <Alert
-        message="Error"
-        description="Error!"
-        type="error"
-        showIcon
-        closable
-      />
-    ) : null;
-
-    const content =
-      movies.length !== 0 && hasData && !spinner ? (
-        <>
-          <Col span={4}>
-            <MovieCardsList
-              arr={movies}
-              sessionId={sessionId}
-              onError={this.onError}
-            />
-          </Col>
-          <Pagination
-            className="pagination tabs-movies"
-            defaultCurrent={page}
-            total={50}
-            onChange={(event) => this.onPageChange(event)}
-          />
-        </>
-      ) : null;
-
-    const ratedContent =
-      ratedMovies.length !== 0 && hasData && !spinner ? (
-        <Col span={4}>
-          <MovieCardsList
-            arr={ratedMovies}
-            sessionId={sessionId}
-            allGenres={allGenres}
-          />
-        </Col>
-      ) : null;
-
-    const visibleContent =
-      movies.length === 0 && !spinner ? (
-        <Alert
-          message="Ooops!"
-          description="Sorry, not found!"
-          type="warning"
-          showIcon
-          closable
-        />
-      ) : (
-        content
-      );
-
-    const input = (
-      <Input
-        type="text"
-        onChange={(event) => this.onLabelChange(event)}
-        value={label}
-        placeholder="Type to search..."
-      />
-    );
-
     const { TabPane } = Tabs;
 
     return (
-      <Provider value={allGenres}>
-        <div className="pages-container">
-          {errorMessage}
+      <div className="pages-container">
+        <Provider value={allGenres}>
+          {error ? <Alert message="Error" description="Error!" type="error" showIcon closable /> : null}
           <Row>
-            <Tabs
-              defaultActiveKey="1"
-              className="tabs-movies"
-              onChange={this.onTabChange}
-            >
+            <Tabs defaultActiveKey="1" className="tabs-movies" onChange={this.onTabChange}>
               <TabPane tab="Search" key="1">
-                {input}
-                {spinner}
-                {visibleContent}
+                <Input
+                  type="text"
+                  onChange={(event) => this.onLabelChange(event)}
+                  value={label}
+                  placeholder="Type to search..."
+                />
+                {
+                  (spinner = loading ? (
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 100 }} />} className="spinner" />
+                  ) : null)
+                }
+                {movies.length === 0 && !spinner ? (
+                  <Alert message="Ooops!" description="Sorry, not found!" type="warning" showIcon closable />
+                ) : movies.length !== 0 && hasData && !spinner ? (
+                  <>
+                    <Col span={4}>
+                      <MovieCardsList arr={movies} sessionId={sessionId} onError={this.onError} />
+                    </Col>
+                    <Pagination
+                      className="pagination tabs-movies"
+                      defaultCurrent={page}
+                      total={50}
+                      onChange={(event) => this.onPageChange(event)}
+                    />
+                  </>
+                ) : null}
               </TabPane>
               <TabPane tab="Rated" key="2">
                 {spinner}
-                {ratedContent}
+                {ratedMovies.length !== 0 && hasData && !spinner ? (
+                  <Col span={4}>
+                    <MovieCardsList arr={ratedMovies} sessionId={sessionId} allGenres={allGenres} />
+                  </Col>
+                ) : null}
               </TabPane>
             </Tabs>
           </Row>
-        </div>
-      </Provider>
+        </Provider>
+      </div>
     );
   }
 }

@@ -1,0 +1,25 @@
+{
+    
+    "workbench.colorTheme": "Oceanic Next",
+    "workbench.iconTheme": "vscode-icons",
+    "liveServer.settings.CustomBrowser": "chrome",
+    "liveServer.settings.donotShowInfoMsg": true,
+    "files.autoSave": "afterDelay",
+    "php.validate.executablePath": "",
+    "liveServer.settings.donotVerifyTags": true,
+    "git.autofetch": true,
+    "liveServer.settings.AdvanceCustomBrowserCmdLine": "chrome",
+    "gitlens.advanced.messages": {
+        "suppressFileNotUnderSourceControlWarning": true
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true,
+        "eslint.autoFixOnSave": true,
+    },
+
+}
+    
