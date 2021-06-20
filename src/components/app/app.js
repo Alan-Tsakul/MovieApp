@@ -41,9 +41,12 @@ export default class App extends Component {
   }
 
   componentDidUpdate(prevState) {
-    const { page } = this.props;
+    const { page } = this.state;
     if (page !== prevState.page) {
       this.updateMovies();
+      this.setState({
+        page: this.props.page
+      })
     }
   }
 
