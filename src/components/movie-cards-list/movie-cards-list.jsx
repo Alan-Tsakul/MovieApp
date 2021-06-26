@@ -1,7 +1,6 @@
-/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import MovieCards from '../movie-cards/movie-cards.jsx';
+import MovieCards from '../movie-cards/movie-cards';
 
 const MovieCardsList = ({ sessionId, onError, arr }) => {
   const elements = arr.map((elem) => (
@@ -20,9 +19,7 @@ const MovieCardsList = ({ sessionId, onError, arr }) => {
     />
   ));
 
-  return (
-      <div className="ant-row ant-row-space-around">{elements}</div>
-  );
+  return <div className="ant-row ant-row-space-around">{elements}</div>;
 };
 
 MovieCardsList.propTypes = {

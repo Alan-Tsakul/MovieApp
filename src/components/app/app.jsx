@@ -1,14 +1,13 @@
-/* eslint-disable */
 import React, { Component } from 'react';
-import { Row, Col, Spin, Alert, Input, Pagination, Tabs } from 'antd';
+import PropTypes from 'prop-types';
+import { Row, Col, Spin, Alert, Input, Pagination, Tabs} from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import debounce from 'lodash.debounce';
 import MovieService from '../../services/movie-service';
-import MovieCardsList from '../movie-cards-list/movie-cards-list.jsx';
+import MovieCardsList from '../movie-cards-list/movie-cards-list';
 import { Provider } from '../my-content/my-context';
 import './app.css';
 import 'antd/dist/antd.css';
-import PropTypes from 'prop-types';
 
 export default class App extends Component {
   static propTypes = {
@@ -44,25 +43,22 @@ export default class App extends Component {
     const { page } = this.state;
     if (page !== prevState.page) {
       this.updateMovies();
-      this.setState({
-        page: this.props.page
-      })
+      this.setState({//eslint-disable-line
+        page: this.props.page, //eslint-disable-line
+      });
     }
   }
-
-  componentWillUnmount() {
-    this.updateMovies();
-  }
-
+  
   onTabChange = () => {
     this.updateRatedMovies();
   };
 
   onLabelChange = (event) => {
-    if (event.target.value === '') {
+    if (event.target.value === '' || event.target.value === ' ') {
       this.setState({
-        label: null,
+        label: '',
         loading: false,
+        movies: []
       });
     } else {
       this.setState({
@@ -117,7 +113,22 @@ export default class App extends Component {
     const hasData = !(loading || error);
     const { TabPane } = Tabs;
 
-    return (
+    const content =
+      movies.length !== 0 && hasData && !spinner ? (
+        <>
+          <Col span={4}>
+            <MovieCardsList arr={movies} sessionId={sessionId} onError={this.onError} />
+          </Col>
+          <Pagination
+            className="pagination tabs-movies"
+            defaultCurrent={page}
+            total={50}
+            onChange={(event) => this.onPageChange(event)}
+          />
+        </>
+      ) : null;
+
+    return (//eslint-disable-line
       <div className="pages-container">
         <Provider value={allGenres}>
           {error ? <Alert message="Error" description="Error!" type="error" showIcon closable /> : null}
@@ -137,19 +148,9 @@ export default class App extends Component {
                 }
                 {movies.length === 0 && !spinner ? (
                   <Alert message="Ooops!" description="Sorry, not found!" type="warning" showIcon closable />
-                ) : movies.length !== 0 && hasData && !spinner ? (
-                  <>
-                    <Col span={4}>
-                      <MovieCardsList arr={movies} sessionId={sessionId} onError={this.onError} />
-                    </Col>
-                    <Pagination
-                      className="pagination tabs-movies"
-                      defaultCurrent={page}
-                      total={50}
-                      onChange={(event) => this.onPageChange(event)}
-                    />
-                  </>
-                ) : null}
+                ) : (
+                  content
+                )}
               </TabPane>
               <TabPane tab="Rated" key="2">
                 {spinner}

@@ -46,3 +46,33 @@
 .ant-rate {
   font-size: 15px !important;
 }
+
+
+.raiting {
+  position: absolute;
+  font-size: 12px;
+  font-weight: 600;
+  right: 9px;
+  top: 12px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  padding-top: 3px;
+  text-align: center;
+}
+
+.red-color {
+  border: 2px solid #e90000;
+}
+
+.orange-color {
+  border: 2px solid #e97e00;
+}
+
+.yellow-color {
+  border: 2px solid #e9d100;
+}
+
+.green-color {
+  border: 2px solid #66e900;
+}

@@ -1,12 +1,11 @@
- /* eslint-disable */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import ClampLines from 'react-clamp-lines';
 import { Rate } from 'antd';
 import MovieService from '../../services/movie-service';
 import './movie-cards.css';
 import { Consumer } from '../my-content/my-context';
-import GenresList from '../genres-list/genres-list.jsx';
-import PropTypes from 'prop-types';
+import GenresList from '../genres-list/genres-list';
 
 export default class MovieCards extends Component {
   static propTypes = {
@@ -19,7 +18,7 @@ export default class MovieCards extends Component {
     voteAverage: PropTypes.number.isRequired,
     posterPath: PropTypes.string.isRequired,
     sessionId: PropTypes.string.isRequired,
-    onError: PropTypes.func.isRequired
+    onError: PropTypes.func.isRequired,
   };
 
   state = {
@@ -48,33 +47,6 @@ export default class MovieCards extends Component {
 
     const { stars } = this.state;
 
-    let divStyle;
-    if (voteAverage >= 0 && voteAverage < 3) {
-      divStyle = { borderColor: '#E90000' };
-    }
-    if (voteAverage >= 3 && voteAverage < 5) {
-      divStyle = { borderColor: '#E97E00' };
-    }
-    if (voteAverage >= 5 && voteAverage < 7) {
-      divStyle = { borderColor: '#E9D100' };
-    }
-    if (voteAverage >= 7) {
-      divStyle = { borderColor: '#66E900' };
-    }
-
-    if (rating >= 0 && rating < 3) {
-      divStyle = { borderColor: '#E90000' };
-    }
-    if (rating >= 3 && rating < 5) {
-      divStyle = { borderColor: '#E97E00' };
-    }
-    if (rating >= 5 && rating < 7) {
-      divStyle = { borderColor: '#E9D100' };
-    }
-    if (rating >= 7) {
-      divStyle = { borderColor: '#66E900' };
-    }
-
     const clampLines = <ClampLines text={overview} lines={4} ellipsis="..." className="card-text" innerElement="p" />;
 
     const rate = (
@@ -88,23 +60,56 @@ export default class MovieCards extends Component {
       />
     );
 
+    let classNames = 'raiting';
+    if (voteAverage >= 0 && voteAverage < 3) {
+      classNames += ' red-color';
+    }
+    if (voteAverage >= 3 && voteAverage < 5) {
+      classNames += ' orange-color';
+    }
+    if (voteAverage >= 5 && voteAverage < 7) {
+      classNames += ' yellow-color';
+    }
+    if (voteAverage >= 7) {
+      classNames += ' green-color';
+    }
+
+    if (rating >= 0 && rating < 3) {
+      classNames += ' red-color';
+    }
+    if (rating >= 3 && rating < 5) {
+      classNames += ' orange-color';
+    }
+    if (rating >= 5 && rating < 7) {
+      classNames += ' yellow-color';
+    }
+    if (rating >= 7) {
+      classNames += ' green-color';
+    }
+
     return (
       <>
-      <div className="card">
-        <img src={`https://image.tmdb.org/t/p/w200${posterPath}`} className="card-img-top" alt="..." />
-        <div className="card-body">
-          <h5 className="card-title" style={{ fontSize: title.length > 20 ? '16px' : null }}>
-            {title}
-          </h5>
-          <div className="raiting" style={divStyle}>
-            {rating === undefined ? voteAverage : rating}
+        <div className="card">
+          <img
+            src={
+              posterPath !== null
+                ? `https://image.tmdb.org/t/p/w200${posterPath}`
+                : 'https://upload.wikimedia.org/wikipedia/ru/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png'
+            }
+            className="card-img-top"
+            alt="film"
+          />
+          <div className="card-body">
+            <h5 className="card-title" style={{ fontSize: title.length > 20 ? '16px' : null }}>
+              {title}
+            </h5>
+            <div className={classNames}>{rating === undefined ? voteAverage : rating}</div>
+            <span className="card-date">{releaseDate}</span>
+            <Consumer>{(allGenres) => <GenresList allGenres={allGenres} genresIds={genresIds} />}</Consumer>
+            {clampLines}
+            {rate}
           </div>
-          <span className="card-date">{releaseDate}</span>
-          <Consumer>{(allGenres) => <GenresList allGenres={allGenres} genresIds={genresIds} />}</Consumer>
-          {clampLines}
-          {rate}
         </div>
-      </div>
       </>
     );
   }

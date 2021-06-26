@@ -90,20 +90,6 @@
   }
 }
 
-.raiting {
-  position: absolute;
-  font-size: 12px;
-  font-weight: 600;
-  right: 9px;
-  top: 12px;
-  width: 30px;
-  height: 30px;
-  border: 2px solid rgb(233, 209, 0);
-  border-radius: 50%;
-  padding-top: 3px;
-  text-align: center;
-}
-
 .ant-input {
   border: 1px solid #d9d9d9;
   height: 40px;
